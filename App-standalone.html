@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Golden Triangle Resident App: Demo</title>
+<style>
+  :root{--ink:#10302b;--leaf:#1f7a4d;--gold:#e0a526;--water:#2b7fbf;--alert:#c2412d;--bg:#e9f0ea;--muted:#5c726c;--line:#cfdcd3;--warn:#fdf3d8;--crit:#f8dcd6}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:#fff;font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+  h1{font-size:clamp(22px,4vw,30px);margin:0 0 4px;text-align:center}
+  .lead{margin:0 0 16px;color:#b8d0c7;text-align:center;max-width:52ch;font-size:14px}
+  .demo{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px}
+  .demo button{font:inherit;font-weight:600;cursor:pointer;border-radius:8px;border:2px solid var(--gold);background:transparent;color:#fff;padding:7px 12px}
+  .demo button.on,.demo button:hover,.demo button:focus-visible{background:var(--gold);color:var(--ink);outline:none}
+  .phone{width:100%;max-width:370px;height:740px;max-height:86vh;background:#fff;color:var(--ink);border:8px solid #000;border-radius:38px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+  .status{display:flex;justify-content:space-between;padding:10px 22px 4px;font-size:12px;font-weight:700}
+  .screen{flex:1;overflow-y:auto;padding:8px 16px 16px}
+  .screen h2{margin:6px 0 2px;font-size:22px}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+  nav{display:flex;border-top:1px solid var(--line);background:#fff}
+  nav button{flex:1;border:0;background:none;font:inherit;font-size:11px;padding:8px 2px 10px;color:var(--muted);cursor:pointer;font-weight:600}
+  nav button.on{color:var(--leaf);box-shadow:inset 0 3px 0 var(--gold)}
+  nav button span{display:block;font-size:19px}
+  .card{background:var(--bg);border-radius:14px;padding:14px;margin-bottom:12px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .tile{background:var(--bg);border-radius:12px;padding:10px 4px;text-align:center;font-size:11px;color:var(--muted);cursor:pointer;border:0;font-family:inherit}
+  .tile b{display:block;font-size:20px;color:var(--ink)}
+  .banner{border-radius:12px;padding:12px;margin-bottom:12px;font-size:14px;cursor:pointer}
+  .banner.ok{background:#dff1e6}.banner.warn{background:var(--warn)}.banner.crit{background:var(--crit)}
+  .banner strong{display:block}
+  .btn{display:block;width:100%;border:0;border-radius:10px;padding:12px;background:var(--leaf);color:#fff;font:inherit;font-weight:700;cursor:pointer;margin-top:10px}
+  .btn.alt{background:var(--ink)}
+  input{width:100%;padding:12px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-top:6px}
+  label{font-size:13px;font-weight:600;display:block;margin-top:12px}
+  .gauge{height:20px;border-radius:10px;background:#fff;overflow:hidden;position:relative;margin:8px 0 4px}
+  .gauge i{display:block;height:100%;border-radius:10px;transition:width .5s}
+  .gauge u{position:absolute;top:0;bottom:0;border-left:3px dashed var(--ink);left:70%}
+  .row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border:0}
+  .pill{font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;background:#dff1e6;color:var(--leaf)}
+  .pill.bad{background:var(--crit);color:var(--alert)}
+  .hours{display:flex;gap:8px;overflow-x:auto}
+  .hr{min-width:58px;text-align:center;background:#fff;border-radius:10px;padding:8px 4px;font-size:12px}
+  .hr b{display:block;font-size:18px}
+  .push{position:absolute;top:34px;left:10px;right:10px;background:#111;color:#fff;border-radius:16px;padding:12px;font-size:13px;z-index:5;transform:translateY(-140px);transition:transform .4s;cursor:pointer;box-shadow:0 8px 24px #0006}
+  .push.show{transform:translateY(0)}
+  .push small{color:var(--gold);font-weight:700;display:block}
+  .logo{display:flex;align-items:center;gap:8px;margin-top:40px}
+  .logo svg{width:44px;height:44px}
+  .big{font-size:40px;font-weight:800;line-height:1}
+  .step{display:flex;gap:10px;margin:10px 0;font-size:14px}
+  .step b{background:var(--ink);color:#fff;border-radius:50%;min-width:24px;height:24px;display:grid;place-items:center;font-size:12px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  nav[hidden]{display:none}
+  nav button{font-size:10px}
+  .qrbox{background:#fff;border:2px solid var(--ink);border-radius:16px;padding:14px;text-align:center;margin-bottom:12px}
+  .qrbox svg{width:190px;height:190px;display:block;margin:0 auto 8px}
+  .qrbox b{font-size:15px}
+  .qrmeta{font-size:12px;color:var(--muted)}
+  .refresh{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin:8px 0 2px}
+  .refresh i{display:block;height:100%;background:var(--gold);width:100%;transition:width 1s linear}
+  select{width:100%;padding:11px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-top:6px;background:#fff}
+  .res{margin-top:10px;font-size:13px;border-radius:10px;padding:10px;display:none}
+  .res.show{display:block}.res.good{background:#dff1e6}.res.bad{background:var(--crit)}
+  .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+  a.btn{text-decoration:none;text-align:center}
+</style>
+</head>
+<body>
+<h1>Golden Triangle Resident App</h1>
+<p class="lead">Interactive demo of what a resident sees. Log in, then use the buttons to change the township conditions and watch the app react.</p>
+<div class="demo" id="demo">
+  <button data-s="calm" class="on">Calm morning</button>
+  <button data-s="erosion">Road erosion</button>
+  <button data-s="storm">Monsoon storm</button>
+</div>
+
+<div class="phone">
+  <div class="push" id="push" onclick="openPush()"></div>
+  <div class="status"><span id="clock">7:30</span><span>Golden Triangle</span></div>
+  <div class="screen" id="screen"></div>
+  <nav id="nav" hidden>
+    <button data-g="home"><span>⌂</span>Home</button>
+    <button data-g="water"><span>≈</span>Water</button>
+    <button data-g="roads"><span>▤</span>Roads</button>
+    <button data-g="energy"><span>⚡</span>Power</button>
+    <button data-g="bike"><span>◉</span>Bike</button>
+    <button data-g="alerts"><span>!</span>Alerts</button>
+  </nav>
+</div>
+
+<script>
+/*
+  qrcode.js - a tiny, dependency-free QR code generator for the Golden Triangle demo.
+  Supports text up to ~100 characters (QR versions 1-5, error correction level L).
+  Usage:  GTQR.svg("some text", 200)  ->  an SVG string you can put in the page.
+*/
+(function (root) {
+  "use strict";
+
+  // ---- Reed-Solomon maths (GF(256), polynomial 0x11d) ----
+  var EXP = [], LOG = [];
+  (function () {
+    var x = 1, i;
+    for (i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x <<= 1; if (x & 256) x ^= 0x11d; }
+    for (i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+  })();
+  function gmul(a, b) { return a && b ? EXP[LOG[a] + LOG[b]] : 0; }
+  function rsGenerator(n) {
+    var g = [1], i, j;
+    for (i = 0; i < n; i++) {
+      var ng = [];
+      for (j = 0; j <= g.length; j++) ng.push(0);
+      for (j = 0; j < g.length; j++) { ng[j] ^= g[j]; ng[j + 1] ^= gmul(g[j], EXP[i]); }
+      g = ng;
+    }
+    return g;
+  }
+  function rsRemainder(data, n) {
+    var g = rsGenerator(n), res = [], i;
+    for (i = 0; i < n; i++) res.push(0);
+    data.forEach(function (b) {
+      var f = b ^ res.shift();
+      res.push(0);
+      for (i = 0; i < n; i++) res[i] ^= gmul(g[i + 1], f);
+    });
+    return res;
+  }
+
+  // version: [data codewords, error-correction codewords, alignment pattern positions]  (level L)
+  var VERSIONS = {
+    1: [19, 7, []],
+    2: [34, 10, [6, 18]],
+    3: [55, 15, [6, 22]],
+    4: [80, 20, [6, 26]],
+    5: [108, 26, [6, 30]]
+  };
+
+  function utf8(text) {
+    var s = unescape(encodeURIComponent(text)), out = [], i;
+    for (i = 0; i < s.length; i++) out.push(s.charCodeAt(i));
+    return out;
+  }
+
+  function makeMatrix(text) {
+    var bytes = utf8(text), ver = 0, v;
+    for (v = 1; v <= 5; v++) {
+      if (4 + 8 + bytes.length * 8 <= VERSIONS[v][0] * 8) { ver = v; break; }
+    }
+    if (!ver) throw new Error("Text too long for this QR generator");
+    var dataCw = VERSIONS[ver][0], ecCw = VERSIONS[ver][1], align = VERSIONS[ver][2];
+    var size = 17 + 4 * ver;
+
+    // ---- 1. build the data bits ----
+    var bits = [];
+    function push(val, len) { for (var i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); }
+    push(4, 4);                 // byte mode
+    push(bytes.length, 8);      // character count
+    bytes.forEach(function (b) { push(b, 8); });
+    var cap = dataCw * 8;
+    push(0, Math.min(4, cap - bits.length));
+    while (bits.length % 8) bits.push(0);
+    for (var pad = 0xEC; bits.length < cap; pad ^= 0xEC ^ 0x11) push(pad, 8);
+
+    var data = [], i, j;
+    for (i = 0; i < bits.length; i += 8) {
+      var byte = 0;
+      for (j = 0; j < 8; j++) byte = (byte << 1) | bits[i + j];
+      data.push(byte);
+    }
+    var all = data.concat(rsRemainder(data, ecCw));
+    var stream = [];
+    all.forEach(function (b) { for (var k = 7; k >= 0; k--) stream.push((b >>> k) & 1); });
+    if (ver > 1) for (i = 0; i < 7; i++) stream.push(0);   // remainder bits
+
+    // ---- 2. draw the fixed patterns ----
+    var m = [], fn = [];
+    for (i = 0; i < size; i++) { m.push([]); fn.push([]); for (j = 0; j < size; j++) { m[i].push(false); fn[i].push(false); } }
+    function sf(x, y, dark) { m[y][x] = !!dark; fn[y][x] = true; }
+
+    for (i = 0; i < size; i++) { sf(6, i, i % 2 === 0); sf(i, 6, i % 2 === 0); }   // timing
+    function finder(cx, cy) {
+      for (var dy = -4; dy <= 4; dy++) for (var dx = -4; dx <= 4; dx++) {
+        var x = cx + dx, y = cy + dy;
+        if (x >= 0 && x < size && y >= 0 && y < size) {
+          var d = Math.max(Math.abs(dx), Math.abs(dy));
+          sf(x, y, d !== 2 && d !== 4);
+        }
+      }
+    }
+    finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+    align.forEach(function (ax, a) {
+      align.forEach(function (ay, b) {
+        var last = align.length - 1;
+        if ((a === 0 && b === 0) || (a === 0 && b === last) || (a === last && b === 0)) return;
+        for (var dy = -2; dy <= 2; dy++) for (var dx = -2; dx <= 2; dx++) {
+          sf(ax + dx, ay + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+        }
+      });
+    });
+
+    function drawFormat(mask) {
+      var d = (1 << 3) | mask;                 // error correction level L = 01
+      var rem = d, k;
+      for (k = 0; k < 10; k++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+      var f = ((d << 10) | rem) ^ 0x5412;
+      function bit(n) { return ((f >>> n) & 1) !== 0; }
+      for (k = 0; k <= 5; k++) sf(8, k, bit(k));
+      sf(8, 7, bit(6)); sf(8, 8, bit(7)); sf(7, 8, bit(8));
+      for (k = 9; k < 15; k++) sf(14 - k, 8, bit(k));
+      for (k = 0; k < 8; k++) sf(size - 1 - k, 8, bit(k));
+      for (k = 8; k < 15; k++) sf(8, size - 15 + k, bit(k));
+      sf(8, size - 8, true);                   // always-dark module
+    }
+    drawFormat(0);
+
+    // ---- 3. place the data ----
+    var idx = 0, right, vert, x, y, up;
+    for (right = size - 1; right >= 1; right -= 2) {
+      if (right === 6) right = 5;
+      for (vert = 0; vert < size; vert++) {
+        for (j = 0; j < 2; j++) {
+          x = right - j;
+          up = ((right + 1) & 2) === 0;
+          y = up ? size - 1 - vert : vert;
+          if (!fn[y][x] && idx < stream.length) { m[y][x] = stream[idx] === 1; idx++; }
+        }
+      }
+    }
+
+    // ---- 4. choose the best mask ----
+    function inMask(mask, x, y) {
+      switch (mask) {
+        case 0: return (x + y) % 2 === 0;
+        case 1: return y % 2 === 0;
+        case 2: return x % 3 === 0;
+        case 3: return (x + y) % 3 === 0;
+        case 4: return (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0;
+        case 5: return (x * y) % 2 + (x * y) % 3 === 0;
+        case 6: return ((x * y) % 2 + (x * y) % 3) % 2 === 0;
+        default: return ((x + y) % 2 + (x * y) % 3) % 2 === 0;
+      }
+    }
+    function applyMask(mask) {
+      for (var yy = 0; yy < size; yy++) for (var xx = 0; xx < size; xx++)
+        if (!fn[yy][xx] && inMask(mask, xx, yy)) m[yy][xx] = !m[yy][xx];
+    }
+    function penalty() {
+      var p = 0, a, b, run, dark = 0;
+      for (a = 0; a < size; a++) {                       // rule 1: runs of 5+ same colour
+        for (var dir = 0; dir < 2; dir++) {
+          run = 1;
+          for (b = 1; b < size; b++) {
+            var cur = dir ? m[b][a] : m[a][b], prev = dir ? m[b - 1][a] : m[a][b - 1];
+            if (cur === prev) { run++; if (run === 5) p += 3; else if (run > 5) p++; } else run = 1;
+          }
+        }
+      }
+      for (a = 0; a < size - 1; a++) for (b = 0; b < size - 1; b++)   // rule 2: 2x2 blocks
+        if (m[a][b] === m[a][b + 1] && m[a][b] === m[a + 1][b] && m[a][b] === m[a + 1][b + 1]) p += 3;
+      var pat1 = [1,0,1,1,1,0,1,0,0,0,0], pat2 = [0,0,0,0,1,0,1,1,1,0,1];   // rule 3: finder-like
+      for (a = 0; a < size; a++) for (b = 0; b <= size - 11; b++) {
+        var h1 = true, h2 = true, v1 = true, v2 = true;
+        for (var k = 0; k < 11; k++) {
+          var hv = m[a][b + k] ? 1 : 0, vv = m[b + k][a] ? 1 : 0;
+          if (hv !== pat1[k]) h1 = false; if (hv !== pat2[k]) h2 = false;
+          if (vv !== pat1[k]) v1 = false; if (vv !== pat2[k]) v2 = false;
+        }
+        p += 40 * ((h1 ? 1 : 0) + (h2 ? 1 : 0) + (v1 ? 1 : 0) + (v2 ? 1 : 0));
+      }
+      for (a = 0; a < size; a++) for (b = 0; b < size; b++) if (m[a][b]) dark++;   // rule 4: balance
+      p += Math.floor(Math.abs(dark * 20 - size * size * 10) / (size * size)) * 10;
+      return p;
+    }
+    var best = 0, bestScore = Infinity, mask;
+    for (mask = 0; mask < 8; mask++) {
+      applyMask(mask); drawFormat(mask);
+      var score = penalty();
+      if (score < bestScore) { bestScore = score; best = mask; }
+      applyMask(mask);                                   // undo
+    }
+    applyMask(best); drawFormat(best);
+    return m;
+  }
+
+  function svg(text, px) {
+    var m = makeMatrix(text), n = m.length, q = 4, total = n + q * 2, d = "", x, y;
+    for (y = 0; y < n; y++) for (x = 0; x < n; x++)
+      if (m[y][x]) d += "M" + (x + q) + " " + (y + q) + "h1v1h-1z";
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + total + " " + total +
+      '" width="' + (px || 200) + '" height="' + (px || 200) + '" shape-rendering="crispEdges" role="img" aria-label="QR code">' +
+      '<rect width="100%" height="100%" fill="#fff"/><path d="' + d + '" fill="#10302b"/></svg>';
+  }
+
+  var api = { svg: svg, matrix: makeMatrix };
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+  root.GTQR = api;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+<script>
+const $ = id => document.getElementById(id);
+const SEGS = ["Main road", "Spine 2 road", "North road"];
+const SCEN = {
+  calm:{ water:22, rain:0, wx:"Clear", temp:31, gates:[0,0,0], clock:"7:30", road:"OK", maint:"None today",
+    history:[18,19,20,21,22,22,22],
+    das:["Normal","Normal","Normal"], dasNote:"No unusual vibration or soil-moisture changes under the roads.",
+    forecast:[["8am","31°","Clear"],["10am","33°","Clear"],["12pm","34°","Sunny"],["2pm","33°","Cloudy"],["4pm","30°","Cloudy"]],
+    alerts:[{id:"a0",lvl:"ok",t:"All clear",d:"Water levels normal and roads are healthy. Enjoy the shaded Linear Spine today.",time:"7:30"}] },
+  erosion:{ water:24, rain:0, wx:"Clear", temp:32, gates:[0,0,0], clock:"9:20", road:"Check", maint:"Spine 2 repair tonight, 2:00 AM",
+    history:[18,19,20,22,23,24,24],
+    das:["Normal","Anomaly","Normal"], dasNote:"Abnormal vibration and rising soil moisture detected under Spine 2 road. Repair is scheduled off-peak.",
+    forecast:[["10am","33°","Clear"],["12pm","35°","Sunny"],["2pm","34°","Cloudy"],["4pm","31°","Cloudy"],["6pm","29°","Clear"]],
+    alerts:[{id:"a1",lvl:"warn",t:"Pothole risk detected on Spine 2 road",d:"DAS cables under the road picked up abnormal vibration, and bioswale sensors show rising soil moisture. A pothole is likely within days. A maintenance crew is booked for 2:00 AM so the road stays open at peak hours.",time:"9:20"}] },
+  storm:{ water:78, rain:110, wx:"Storm", temp:26, gates:[1,1,0], clock:"3:10", road:"Watch", maint:"Crew on standby",
+    history:[22,30,41,55,64,72,78],
+    das:["Normal","Watch","Normal"], dasNote:"Water is shifting under the Spine 2 road base. Monitoring closely for erosion.",
+    forecast:[["3pm","26°","Storm"],["4pm","25°","Storm"],["5pm","25°","Heavy rain"],["6pm","26°","Rain"],["8pm","27°","Showers"]],
+    alerts:[
+      {id:"a2",lvl:"crit",t:"Flood risk: move to higher ground",d:"Water at the Spine 2 bioswale is above the safe threshold and gates A and B have closed. Move vehicles and valuables to higher ground now.",time:"3:10",evac:true},
+      {id:"a3",lvl:"warn",t:"Heavy storms for the next few hours",d:"Rain is expected to continue. Prepare for possible flooding and avoid low-lying roads.",time:"2:40"}] }
+};
+let st = {scen:"calm", screen:"login", alert:null, loggedIn:false, unit:"B-12-03"};
+
+// ---- E-bike stations and resident QR codes ----
+const STATIONS = [
+  {id:"main-gate", name:"Main Gate", free:5, total:8},
+  {id:"spine-1", name:"Linear Spine 1", free:3, total:6},
+  {id:"spine-2", name:"Linear Spine 2", free:4, total:6},
+  {id:"community-hall", name:"Community Hall", free:2, total:8},
+  {id:"north-gate", name:"North Gate", free:6, total:8}
+];
+const CODE_SECONDS = 60;   // a resident's QR code changes every minute so screenshots stop working
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function hash(s){ let h = 2166136261; for(const c of s){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; } return h.toString(16).padStart(8,"0"); }
+const codeWindow = () => Math.floor(Date.now() / 1000 / CODE_SECONDS);
+function residentCode(unit, win){ return "GT-RES:" + unit + ":" + hash("golden-triangle|" + unit + "|" + win); }
+// What a station does when it scans a code: recompute the expected code for this unit and compare.
+function stationCheck(payload){
+  const parts = payload.split(":");
+  if(parts[0] !== "GT-RES" || parts.length < 3) return false;
+  const unit = parts.slice(1, -1).join(":");
+  const w = codeWindow();
+  return payload === residentCode(unit, w) || payload === residentCode(unit, w - 1);
+}
+let staleCode = null;
+const D = () => SCEN[st.scen];
+
+function go(s){ st.screen = s; render(); }
+function openAlert(id){ st.alert = id; st.screen = "detail"; render(); }
+function openPush(){ const a = D().alerts[0]; $("push").classList.remove("show"); if(a) openAlert(a.id); }
+
+function render(){
+  const d = D(), el = $("screen");
+  $("clock").textContent = d.clock;
+  $("nav").hidden = !st.loggedIn;
+  [...$("nav").children].forEach(b => b.classList.toggle("on", b.dataset.g === st.screen));
+  el.scrollTop = 0;
+  el.innerHTML = VIEWS[st.screen]();
+  shownWindow = null; drawQR();
+}
+
+const topAlert = () => D().alerts[0];
+const barColor = v => v>=70 ? "var(--alert)" : v>=50 ? "var(--gold)" : "var(--water)";
+
+const VIEWS = {
+  login: () => `
+    <div class="logo"><svg viewBox="0 0 40 40"><polygon points="20,4 37,35 3,35" fill="#e0a526"/><polygon points="20,15 29,31 11,31" fill="#10302b"/></svg><div><b style="font-size:20px">Golden Triangle</b><br><small style="color:var(--muted)">Resident app</small></div></div>
+    <h2 style="margin-top:28px">Welcome home</h2>
+    <p class="sub">Log in to see live water, road and weather conditions for your township.</p>
+    <label>Unit number</label><input id="unit" value="B-12-03" maxlength="24" aria-label="Unit number">
+    <label>Password</label><input type="password" value="demo1234" aria-label="Password">
+    <button class="btn" onclick="login()">Log in</button>
+    <p class="hint">Demo account. No real data is used.</p>`,
+
+  home: () => { const d=D(), a=topAlert(); return `
+    <h2>Good ${d.clock.startsWith("3")?"afternoon":"morning"}, resident</h2>
+    <p class="sub">Unit B-12-03 · live from township sensors</p>
+    <div class="banner ${a.lvl}" onclick="openAlert('${a.id}')"><strong>${a.t}</strong>${a.lvl==="ok"?"Everything is running normally.":"Tap for details and what to do."}</div>
+    <div class="grid3">
+      <button class="tile" onclick="go('water')">Water level<b>${d.water}%</b></button>
+      <button class="tile" onclick="go('roads')">Road health<b>${d.road}</b></button>
+      <button class="tile" onclick="go('weather')">Weather<b>${d.temp}°</b>${d.wx}</button>
+    </div>
+    <div class="card"><b>Today on your street</b>
+      <div class="row"><span>Linear Spine walkway</span><span class="pill ${d.water>=70?"bad":""}">${d.water>=70?"Wet, use with care":"Open, shaded"}</span></div>
+      <div class="row" onclick="go('bike')" style="cursor:pointer"><span>E-bike stations</span><span class="pill">20 free</span></div>
+      <div class="row"><span>Road maintenance</span><span>${d.maint}</span></div></div>
+    <button class="btn alt" onclick="go('alerts')">See all alerts</button>`; },
+
+  water: () => { const d=D(); return `
+    <h2>Water level</h2><p class="sub">Linear Green Spine bioswale sensors</p>
+    <div class="card"><div class="big" style="color:${barColor(d.water)}">${d.water}%</div>
+      <div class="gauge"><i style="width:${d.water}%;background:${barColor(d.water)}"></i><u></u></div>
+      <small style="color:var(--muted)">Dashed line = alert threshold (70%)</small></div>
+    <div class="card"><b>Flood gates</b>
+      ${["A","B","C"].map((g,i)=>`<div class="row"><span>Gate ${g}</span><span class="pill ${d.gates[i]?"bad":""}">${d.gates[i]?"Closed":"Open"}</span></div>`).join("")}</div>
+    <div class="card"><b>Last 6 hours</b><svg viewBox="0 0 200 60" width="100%"><polyline fill="none" stroke="#2b7fbf" stroke-width="3" points="${d.history.map((v,i)=>`${i*33},${60-v*0.6}`).join(" ")}"/></svg></div>`; },
+
+  bike: () => `
+    <h2>E-bike</h2><p class="sub">Free for residents · unit ${esc(st.unit)}</p>
+    <div class="qrbox">
+      <div id="qr"></div>
+      <b>Your personal unlock code</b>
+      <div class="refresh"><i id="qrbar"></i></div>
+      <div class="qrmeta">New code in <span id="qrsec">60</span>s · made only for unit ${esc(st.unit)}</div>
+    </div>
+    <p class="hint" style="margin:0 0 12px">Hold this code up to the reader on any charging station. It is generated from your unit and changes every minute, so a screenshot or a shared code stops working.</p>
+    <div class="card"><b>Try it at a station</b>
+      <select id="stn" aria-label="Charging station">${STATIONS.map(s=>`<option value="${s.id}">${s.name}</option>`).join("")}</select>
+      <button class="btn" onclick="scanStation(false)">Scan my code</button>
+      <button class="btn ghost" onclick="scanStation(true)">Scan an old screenshot</button>
+      <div class="res" id="scanres"></div></div>
+    <div class="card"><b>Charging stations</b>
+      ${STATIONS.map(s=>`<div class="row"><span>${s.name}</span><span class="pill ${s.free<3?"bad":""}">${s.free} of ${s.total} free</span></div>`).join("")}
+      <p class="hint">Charging stations run on solar panels.</p></div>
+    <div class="card"><b>Visitors</b><p style="margin:6px 0 0;font-size:14px">Non-residents can't use a code. They pay RM 3 per 30 minutes on the guest rental page, before the bike unlocks.</p>
+      <a class="btn alt" href="ebike-rental.html" target="_blank" rel="noopener">Open guest rental page</a></div>`,
+
+  roads: () => { const d=D(); return `
+    <h2>Road health</h2><p class="sub">DAS fibre-optic cables under the road</p>
+    <div class="card"><div class="big" style="color:${d.road==="OK"?"var(--leaf)":"var(--alert)"}">${d.road}</div>
+      <p style="margin:8px 0 0;font-size:14px">${d.dasNote}</p></div>
+    <div class="card"><b>Road segments</b>
+      ${SEGS.map((s,i)=>`<div class="row"><span>${s}</span><span class="pill ${d.das[i]==="Normal"?"":"bad"}">${d.das[i]}</span></div>`).join("")}</div>
+    <div class="card"><b>Maintenance</b><p style="margin:6px 0 0;font-size:14px">${d.maint}. Repairs are booked off-peak so roads stay open when residents need them.</p></div>
+    <p class="hint">DAS cables pick up tiny changes in road vibration. With bioswale moisture data, they predict potholes before they form.</p>`; },
+
+  weather: () => { const d=D(); return `
+    <h2>Weather</h2><p class="sub">Next few hours</p>
+    <div class="card"><div class="big">${d.temp}°</div><b>${d.wx}</b><div class="hint">Rainfall now: ${d.rain} mm/h</div></div>
+    <div class="hours">${d.forecast.map(f=>`<div class="hr">${f[0]}<b>${f[1]}</b>${f[2]}</div>`).join("")}</div>
+    <p class="hint">${d.rain>=60?"Heavy storms are expected. The app will keep sending updates as conditions change.":"No heavy rain expected."}</p>`; },
+
+  energy: () => `
+    <h2>Power</h2><p class="sub">Where the township's power comes from</p>
+    <div class="card"><b>Water-level sensors</b><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Run on a small solar panel with a battery for storms and nights.</p>
+      <div class="big" style="margin-top:8px">80%</div><small style="color:var(--muted)">sensor battery charge</small>
+      <div class="gauge"><i style="width:80%;background:var(--leaf)"></i></div>
+      <div class="row" style="margin-top:8px"><span>Water-level sensors</span><span class="pill">Online</span></div></div>
+    <div class="card"><b>E-bike charging stations</b><p style="margin:4px 0 0;font-size:13px;color:var(--muted)">Each station runs on its own solar panels.</p>
+      ${STATIONS.map(s=>`<div class="row"><span>${s.name}</span><span class="pill">Online</span></div>`).join("")}</div>
+    <p class="hint">Demo values for illustration.</p>`,
+
+  alerts: () => `
+    <h2>Alerts</h2><p class="sub">Warnings sent to your phone</p>
+    ${D().alerts.map(a=>`<div class="banner ${a.lvl}" onclick="openAlert('${a.id}')"><strong>${a.t}</strong>${a.time} · tap to read</div>`).join("")}
+    <div class="card"><b>Earlier today</b><div class="row"><span>DAS cable: routine road check</span><span class="pill">Resolved</span></div></div>`,
+
+  detail: () => {
+    const a = D().alerts.find(x=>x.id===st.alert) || topAlert();
+    return `<button class="btn alt" style="margin:0 0 10px;width:auto;padding:6px 12px" onclick="go('alerts')">← Back</button>
+    <div class="banner ${a.lvl}" style="cursor:default"><strong>${a.t}</strong>${a.time}</div>
+    <p style="font-size:15px">${a.d}</p>
+    ${a.evac?`<div class="card"><b>What to do now</b>
+      <div class="step"><b>1</b>Move your car to the higher-ground car park.</div>
+      <div class="step"><b>2</b>Avoid Spine 2 and low-lying roads. Gates A and B are closed.</div>
+      <div class="step"><b>3</b>Stay indoors above ground level and keep this app open for updates.</div></div>
+    <button class="btn" onclick="ack(this)">I'm safe, mark as read</button>`:`<button class="btn" onclick="ack(this)">Got it</button>`}`; }
+};
+
+function login(){
+  const u = $("unit") ? $("unit").value.trim() : "";
+  st.unit = (u || "B-12-03").slice(0, 24); staleCode = null;
+  st.loggedIn = true; go("home");
+}
+
+// ---- QR display and station scan demo ----
+let shownWindow = null;
+function drawQR(){
+  const box = $("qr"); if(!box || st.screen !== "bike") return;
+  const w = codeWindow();
+  if(w !== shownWindow || !box.firstChild){ shownWindow = w; box.innerHTML = GTQR.svg(residentCode(st.unit, w), 190); }
+  const left = CODE_SECONDS - (Math.floor(Date.now()/1000) % CODE_SECONDS);
+  $("qrsec").textContent = left; $("qrbar").style.width = (left / CODE_SECONDS * 100) + "%";
+}
+setInterval(drawQR, 500);
+function scanStation(useOld){
+  const stn = STATIONS.find(s => s.id === $("stn").value), res = $("scanres");
+  if(useOld && !staleCode) staleCode = residentCode(st.unit, codeWindow() - 5);   // a code from 5 minutes ago
+  const payload = useOld ? staleCode : residentCode(st.unit, codeWindow());
+  const ok = stationCheck(payload), n = String(100 + Math.floor(Math.random()*400));
+  res.className = "res show " + (ok ? "good" : "bad");
+  res.innerHTML = ok
+    ? "<b>✓ Unlocked bike GT-" + n + "</b><br>" + stn.name + " station verified the code for unit " + esc(st.unit) + ". Ride is free for residents."
+    : "<b>✗ Code expired</b><br>" + stn.name + " station rejected it. Codes only work for a minute. Open the app for a fresh one.";
+}
+function ack(b){ b.textContent = "Thanks, marked as read ✓"; b.disabled = true; }
+
+function notify(){
+  const a = topAlert();
+  if(!st.loggedIn || a.lvl==="ok") return;
+  const p = $("push");
+  p.innerHTML = `<small>GOLDEN TRIANGLE · now</small><b>${a.t}</b><br>${a.d.split(".")[0]}.`;
+  p.classList.add("show");
+  setTimeout(()=>p.classList.remove("show"), 6000);
+}
+
+$("demo").addEventListener("click", e => {
+  const s = e.target.dataset.s; if(!s) return;
+  st.scen = s;
+  [...$("demo").children].forEach(b => b.classList.toggle("on", b.dataset.s===s));
+  if(st.screen==="detail") st.screen = "home";
+  render(); notify();
+});
+$("nav").addEventListener("click", e => { const b = e.target.closest("button"); if(b) go(b.dataset.g); });
+render();
+
+</script>
+</body>
+</html>
