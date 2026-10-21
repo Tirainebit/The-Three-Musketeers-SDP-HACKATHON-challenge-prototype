@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Golden Triangle Guest E-Bike Rental</title>
+<style>
+  :root{--ink:#10302b;--leaf:#1f7a4d;--gold:#e0a526;--water:#2b7fbf;--alert:#c2412d;--bg:#e9f0ea;--muted:#5c726c;--line:#cfdcd3;--warn:#fdf3d8;--crit:#f8dcd6}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;line-height:1.5;transition:background .2s}
+  body.flash{animation:flash .5s steps(2) infinite}
+  @keyframes flash{50%{background:#f3a99d}}
+  @media (prefers-reduced-motion:reduce){body.flash{animation:none;background:#f3a99d}}
+  header{background:var(--ink);color:#fff;padding:20px 16px}
+  .wrap{max-width:520px;margin:0 auto}
+  header h1{margin:0;font-size:22px;display:flex;align-items:center;gap:10px}
+  header p{margin:4px 0 0;color:#b8d0c7;font-size:14px}
+  svg.tri{width:30px;height:30px}
+  .tools{background:#0c2a24;color:#cfe3da;font-size:13px;padding:10px 16px}
+  .tools .wrap{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+  .tools select{font:inherit;padding:4px 6px;border-radius:6px}
+  .tools button{font:inherit;cursor:pointer;background:transparent;color:#fff;border:1px solid var(--gold);border-radius:6px;padding:3px 10px}
+  main{max-width:520px;margin:0 auto;padding:16px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+  h2{margin:0 0 4px;font-size:21px}
+  .sub{margin:0 0 12px;color:var(--muted);font-size:14px}
+  label{display:block;font-size:14px;font-weight:600;margin-top:12px}
+  input,select.f{width:100%;padding:12px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-top:6px;background:#fff;color:var(--ink)}
+  input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .btn{display:block;width:100%;border:0;border-radius:10px;padding:13px;background:var(--leaf);color:#fff;font:inherit;font-weight:700;cursor:pointer;margin-top:14px}
+  .btn.alt{background:var(--ink)} .btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink)} .btn.danger{background:var(--alert)}
+  .btn:disabled{opacity:.6;cursor:default}
+  .blocks{display:flex;align-items:center;gap:12px;margin-top:8px}
+  .blocks button{width:44px;height:44px;border-radius:10px;border:2px solid var(--ink);background:#fff;font-size:22px;font-weight:700;cursor:pointer;color:var(--ink)}
+  .blocks span{flex:1;text-align:center;font-weight:700}
+  .total{background:var(--bg);border-radius:10px;padding:12px;margin-top:14px;display:flex;justify-content:space-between;font-weight:700}
+  .err{color:var(--alert);font-size:13px;font-weight:600;min-height:18px;margin-top:8px}
+  .demo{background:var(--warn);border-left:4px solid var(--gold);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:12px}
+  .row{display:flex;justify-content:space-between;font-size:14px;padding:7px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border:0}
+  .pill{font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px;background:#dff1e6;color:var(--leaf)}
+  .pill.warn{background:var(--warn);color:#8a6209}.pill.bad{background:var(--crit);color:var(--alert)}
+  .clock{font-size:58px;font-weight:800;text-align:center;letter-spacing:1px;font-variant-numeric:tabular-nums;line-height:1.1;margin:8px 0 2px}
+  .clock.red{color:var(--alert)}
+  .csub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:10px}
+  .bar{height:12px;background:var(--bg);border-radius:6px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--leaf);width:0;transition:width .3s}
+  .route{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0;font-size:14px;font-weight:600}
+  .route span.c{background:var(--bg);padding:4px 10px;border-radius:99px}
+  .note{border-radius:8px;padding:8px 10px;margin-top:6px;font-size:13px;background:var(--bg)}
+  .note.warn{background:var(--warn)} .note.crit{background:var(--crit)}
+  .note time{color:var(--muted);margin-right:6px}
+  .panel{border-radius:12px;padding:14px;margin-top:12px;font-size:15px}
+  .panel.warn{background:var(--warn)} .panel.crit{background:var(--crit);border:2px solid var(--alert)}
+  .panel b{display:block;font-size:17px;margin-bottom:4px}
+  details.guard{max-width:520px;margin:0 auto 30px;padding:0 16px}
+  details.guard summary{cursor:pointer;font-weight:700;padding:8px 0}
+  .g{font-size:13px;padding:6px 10px;border-radius:8px;background:#fff;margin-top:6px;border:1px solid var(--line)}
+  .g.crit{background:var(--crit);border-color:var(--alert);font-weight:700}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:10px}
+  .methods{display:flex;gap:8px;margin-top:8px}
+  .methods button{flex:1;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:10px;padding:10px;font:inherit;font-weight:700;cursor:pointer}
+  .methods button.on{background:var(--ink);color:#fff}
+  .ewallet{background:var(--bg);border-radius:10px;padding:12px;margin-top:12px;font-size:14px}
+  footer{max-width:520px;margin:0 auto;padding:0 16px 30px;font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1><svg class="tri" viewBox="0 0 40 40" aria-hidden="true"><polygon points="20,4 37,35 3,35" fill="#e0a526"/><polygon points="20,15 29,31 11,31" fill="#fff"/></svg>Guest e-bike rental</h1>
+  <p>For visitors. Residents unlock bikes free with the app's QR code.</p>
+</div></header>
+
+<div class="tools"><div class="wrap">
+  <label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400">Demo speed
+    <select id="speed" aria-label="Demo speed">
+      <option value="30" selected>Fast (30 min in 1 min)</option>
+      <option value="1">Real time</option>
+    </select></label>
+  <label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400"><input type="checkbox" id="snd" checked style="width:auto;margin:0"> Sound and voice</label>
+  <button id="test" type="button">Test sound and voice</button>
+  <span>The demo alarm is loud, so lower your volume first.</span>
+</div></div>
+
+<main id="main"></main>
+
+<details class="guard" id="guard"><summary>Guard post view (demo)</summary><div id="glog"><div class="g">No events yet.</div></div></details>
+<footer>Prototype simulation. No payment is processed and nothing is stored or sent anywhere. Prices and timings follow the Golden Triangle design: RM 3 per 30 minutes, paid before the bike unlocks. The charging stations run on solar panels.</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const STATIONS = [
+  {id:"main-gate", name:"Main Gate", free:5},
+  {id:"spine-1", name:"Linear Spine 1", free:3},
+  {id:"spine-2", name:"Linear Spine 2", free:4},
+  {id:"community-hall", name:"Community Hall", free:2},
+  {id:"north-gate", name:"North Gate", free:6}
+];
+const PRICE = 3, BLOCK = 30, GRACE = 5;          // RM per block, minutes per block, grace minutes to return after time is up
+const stName = id => STATIONS.find(s => s.id === id).name;
+const params = new URLSearchParams(location.search);
+const startId = STATIONS.some(s => s.id === params.get("station")) ? params.get("station") : "main-gate";
+let form = {from:startId, to: startId === "north-gate" ? "main-gate" : "north-gate", blocks:1, method:"card"};
+let step = "route", ride = null, loop = null, siren = null, ctx = null, glogs = [], lastRide = null;
+let speed = 30, soundOn = true;
+
+// ---------- sound ----------
+function audio(){
+  if(!ctx){ try{ ctx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){} }
+  if(ctx && ctx.state === "suspended") ctx.resume();
+  return ctx;
+}
+function beep(freq, dur, type, vol, delay){
+  if(!soundOn) return; const c = audio(); if(!c) return;
+  const t = c.currentTime + (delay || 0), o = c.createOscillator(), g = c.createGain();
+  o.type = type || "sine"; o.frequency.value = freq;
+  g.gain.setValueAtTime(vol || .3, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+  o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur + .02);
+}
+function beeps(n, freq){ for(let i = 0; i < n; i++) beep(freq, .16, "sine", .35, i * .3); try{ navigator.vibrate && navigator.vibrate(200); }catch(e){} }
+// The bike speaks the time left out loud (uses the browser's built-in voice, if it has one)
+function speak(text, force){
+  if(!(soundOn || force) || !("speechSynthesis" in window)) return;
+  try{ speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = .95; speechSynthesis.speak(u); }catch(e){}
+}
+const leftMsg = mn => `You have ${mn} minute${mn > 1 ? "s" : ""} left, please find the nearest charging station.`;
+function startSiren(){ stopSiren(); let hi = false; siren = setInterval(() => { hi = !hi; beep(hi ? 1400 : 900, .28, "square", .7); try{ navigator.vibrate && navigator.vibrate(250); }catch(e){} }, 300); }
+function stopSiren(){ if(siren){ clearInterval(siren); siren = null; } }
+
+// ---------- helpers ----------
+const mmss = s => { s = Math.max(0, Math.ceil(s)); return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s % 60).padStart(2,"0"); };
+const clockNow = () => new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+const money = n => "RM " + n.toFixed(2).replace(/\.00$/, "");
+function gl(text, lvl){
+  glogs.unshift({text, lvl:lvl || "", at:clockNow()});
+  $("glog").innerHTML = glogs.map(g => `<div class="g ${g.lvl}"><time>${g.at}</time> · ${g.text}</div>`).join("");
+  if(lvl === "crit") $("guard").open = true;
+}
+function note(text, lvl){ ride.notes.unshift({text, lvl:lvl || "", at:clockNow()}); drawNotes(); }
+function drawNotes(){ const n = $("notes"); if(n) n.innerHTML = ride.notes.map(x => `<div class="note ${x.lvl}"><time>${x.at}</time>${x.text}</div>`).join(""); }
+const stationOptions = sel => STATIONS.map(s => `<option value="${s.id}" ${s.id === sel ? "selected" : ""}>${s.name} (${s.free} bikes free)</option>`).join("");
+
+// ---------- screens ----------
+function render(){
+  document.body.classList.toggle("flash", !!ride && ride.phase === "alarm");
+  const m = $("main");
+  if(step === "route") m.innerHTML = routeView();
+  else if(step === "pay") m.innerHTML = payView();
+  else if(step === "ride") m.innerHTML = rideView();
+  else m.innerHTML = doneView();
+  window.scrollTo(0, 0);
+  bind();
+}
+
+function routeView(){
+  const total = form.blocks * PRICE, mins = form.blocks * BLOCK;
+  return `<div class="card"><h2>Plan your ride</h2><p class="sub">Step 1 of 3 · choose your stations and time</p>
+    <label for="f_from">Starting station (where you are now)</label>
+    <select class="f" id="f_from">${stationOptions(form.from)}</select>
+    <label for="f_to">Final destination station</label>
+    <select class="f" id="f_to">${stationOptions(form.to)}</select>
+    <label>Riding time</label>
+    <div class="blocks"><button type="button" id="minus" aria-label="Less time">−</button><span>${mins} minutes (${form.blocks} × ${BLOCK} min)</span><button type="button" id="plus" aria-label="More time">+</button></div>
+    <div class="total"><span>You pay now</span><span>${money(total)}</span></div>
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="next" type="button">Continue to payment</button>
+    <p class="hint">${money(PRICE)} per ${BLOCK} minutes. You pay before the bike unlocks.</p></div>`;
+}
+
+function payView(){
+  const total = form.blocks * PRICE, card = form.method === "card";
+  const fields = card
+    ? `<label for="c_name">Name on card</label><input id="c_name" value="Demo Visitor" autocomplete="off">
+    <label for="c_num">Card number</label><input id="c_num" value="4242 4242 4242 4242" inputmode="numeric" autocomplete="off" maxlength="19">
+    <div class="two"><div><label for="c_exp">Expiry (MM/YY)</label><input id="c_exp" value="12/30" autocomplete="off" maxlength="5"></div>
+    <div><label for="c_cvv">CVV</label><input id="c_cvv" value="123" inputmode="numeric" autocomplete="off" maxlength="4"></div></div>`
+    : `<div class="ewallet">You will be asked to approve <b>${money(total)}</b> in your e-wallet app, then the bike unlocks. This is simulated: no real wallet is connected.</div>`;
+  return `<div class="card"><h2>Pay to unlock</h2><p class="sub">Step 2 of 3 · payment</p>
+    <div class="demo"><b>Demo only.</b> No payment is processed and nothing is saved or sent. A test card is filled in for you, and the e-wallet is simulated. Never type a real card number into a prototype. A real system would use a payment provider so card details never touch the township's own servers.</div>
+    <div class="row"><span>Route</span><span>${stName(form.from)} → ${stName(form.to)}</span></div>
+    <div class="row"><span>Time</span><span>${form.blocks * BLOCK} minutes</span></div>
+    <div class="row"><span>Total</span><b>${money(total)}</b></div>
+    <label>Payment method</label>
+    <div class="methods" role="group" aria-label="Payment method"><button type="button" data-method="card" class="${card ? "on" : ""}">Card</button><button type="button" data-method="ewallet" class="${card ? "" : "on"}">E-wallet</button></div>
+    ${fields}
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="pay" type="button">${card ? "Pay " + money(total) + " and unlock" : "Pay " + money(total) + " with e-wallet"}</button>
+    <button class="btn ghost" id="back" type="button">Back</button></div>`;
+}
+
+function rideView(){
+  const r = ride, p = r.phase;
+  const status = p === "riding" ? `<span class="pill">Unlocked</span>` : p === "return" ? `<span class="pill warn">Return now</span>` : `<span class="pill bad">ALARM</span>`;
+  let panel = "";
+  if(p === "return") panel = `<div class="panel warn"><b>Time's up. Please return the bike.</b>Take it to the nearest station. Your destination, <b style="display:inline">${stName(r.to)}</b>, is the closest one on your route. If it isn't docked in <span id="grace">${mmss(r.grace)}</span>, the bike will start sounding an alarm.</div>`;
+  if(p === "alarm") panel = `<div class="panel crit"><b>ALARM: bike not returned</b>The bike is beeping loudly and guards have been alerted to its last known station, ${stName(r.lastStation)}. Dock it at any station to stop the alarm.</div>`;
+  const extend = p !== "alarm" ? `<button class="btn ghost" id="extend" type="button">Add ${BLOCK} more minutes · ${money(PRICE)} (${r.payLabel})</button>` : "";
+  return `<div class="card"><h2>Bike ${r.id}</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center"><span class="sub" style="margin:0">Step 3 of 3 · paid ${money(r.paid)}</span>${status}</div>
+    <div class="route"><span class="c">${stName(r.from)}</span>→<span class="c">${stName(r.to)}</span></div>
+    <div class="clock ${p === "riding" ? "" : "red"}" id="clock">${mmss(r.remaining)}</div>
+    <div class="csub" id="csub"></div>
+    <div class="bar"><i id="bar"></i></div>
+    ${panel}
+    ${extend}
+    <button class="btn ${p === "alarm" ? "danger" : "alt"}" id="dock" type="button">${p === "alarm" ? "I've docked the bike · stop alarm" : "I've returned the bike"}</button>
+    <p class="hint">${p === "riding" ? "The bike will beep and tell you the time left at 10, 5 and 1 minute." : "Docking the bike at a station ends the ride."}</p></div>
+    <div class="card"><b>Ride log</b><div id="notes"></div></div>`;
+}
+
+function doneView(){
+  const r = lastRide;
+  return `<div class="card"><h2>Ride finished</h2><p class="sub">${r.status}</p>
+    <div class="row"><span>Bike</span><span>${r.id}</span></div>
+    <div class="row"><span>Route</span><span>${stName(r.from)} → ${stName(r.to)}</span></div>
+    <div class="row"><span>Time bought</span><span>${r.total / 60} minutes</span></div>
+    <div class="row"><span>Paid</span><span>${money(r.paid)} · ${r.payLabel}</span></div>
+    <div class="row"><span>Receipt</span><span>${r.ref}</span></div>
+    <button class="btn" id="again" type="button">Start another ride</button></div>`;
+}
+
+// ---------- events ----------
+function bind(){
+  const on = (id, fn) => { const e = $(id); if(e) e.addEventListener("click", fn); };
+  if(step === "route"){
+    $("f_from").onchange = e => { form.from = e.target.value; };
+    $("f_to").onchange = e => { form.to = e.target.value; };
+    on("minus", () => { form.blocks = Math.max(1, form.blocks - 1); render(); });
+    on("plus", () => { form.blocks = Math.min(4, form.blocks + 1); render(); });
+    on("next", () => {
+      if(form.from === form.to){ $("err").textContent = "Your starting and destination stations must be different."; return; }
+      step = "pay"; render();
+    });
+  }
+  if(step === "pay"){
+    document.querySelectorAll(".methods button").forEach(b => b.addEventListener("click", () => { form.method = b.dataset.method; render(); }));
+    if($("c_num")) $("c_num").oninput = e => { e.target.value = e.target.value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim(); };
+    on("back", () => { step = "route"; render(); });
+    on("pay", pay);
+  }
+  if(step === "ride"){ on("dock", dock); on("extend", extend); drawNotes(); update(); }
+  if(step === "done") on("again", () => { step = "route"; ride = null; render(); });
+}
+
+function luhn(num){ let s = 0, alt = false; for(let i = num.length - 1; i >= 0; i--){ let d = +num[i]; if(alt){ d *= 2; if(d > 9) d -= 9; } s += d; alt = !alt; } return s % 10 === 0; }
+
+function pay(){
+  audio();                                    // the click lets the browser play sound later
+  if(form.method === "ewallet"){
+    $("pay").disabled = true; $("pay").textContent = "Waiting for approval in your e-wallet…"; $("err").textContent = "";
+    setTimeout(() => startRide("e-wallet"), 1600);
+    return;
+  }
+  const num = $("c_num").value.replace(/\s/g, ""), exp = $("c_exp").value.trim(), cvv = $("c_cvv").value.trim(), err = $("err");
+  const m = /^(\d{2})\/(\d{2})$/.exec(exp);
+  if(!$("c_name").value.trim()) return err.textContent = "Enter the name on the card.";
+  if(num.length !== 16 || !luhn(num)) return err.textContent = "That card number doesn't look right. Check all 16 digits.";
+  if(!m || +m[1] < 1 || +m[1] > 12 || (2000 + +m[2]) * 12 + +m[1] < new Date().getFullYear() * 12 + new Date().getMonth() + 1) return err.textContent = "Check the expiry date (MM/YY). It must be in the future.";
+  if(!/^\d{3,4}$/.test(cvv)) return err.textContent = "The CVV is 3 or 4 digits.";
+  const last4 = num.slice(-4);
+  $("pay").disabled = true; $("pay").textContent = "Processing payment…"; err.textContent = "";
+  $("c_num").value = $("c_cvv").value = "";   // card details are cleared straight away
+  setTimeout(() => startRide("card ending " + last4), 1100);
+}
+
+function startRide(payLabel){
+  const total = form.blocks * BLOCK * 60, id = "GT-" + String(100 + Math.floor(Math.random() * 400));
+  ride = {id, from:form.from, to:form.to, total, remaining:total, paid:form.blocks * PRICE, payLabel, phase:"riding",
+          grace:GRACE * 60, fired:{600:false, 300:false, 60:false}, notes:[], last:performance.now(),
+          ref:"GT" + Math.random().toString(36).slice(2, 8).toUpperCase(), lastStation:form.from};
+  step = "ride";
+  gl(`Bike ${id} unlocked at ${stName(form.from)} (guest, ${money(ride.paid)} paid).`);
+  render();
+  note(`Payment of ${money(ride.paid)} received. Bike unlocked.`);
+  beeps(1, 1000);
+  if(loop) clearInterval(loop);
+  loop = setInterval(tick, 250);
+}
+
+function tick(){
+  if(!ride || ride.phase === "done") return;
+  const now = performance.now(), dt = (now - ride.last) / 1000 * speed; ride.last = now;
+  if(ride.phase === "riding"){
+    ride.remaining -= dt;
+    [600, 300, 60].forEach(t => {
+      if(!ride.fired[t] && ride.remaining <= t){
+        ride.fired[t] = true;
+        if(ride.remaining > 0){ const mn = t / 60; note(`${mn} minute${mn > 1 ? "s" : ""} left. The bike says: "${leftMsg(mn)}"`, mn === 1 ? "crit" : "warn"); beeps(mn === 10 ? 1 : mn === 5 ? 2 : 3, 880); setTimeout(() => speak(leftMsg(mn)), 1100); }
+      }
+    });
+    if(ride.remaining <= 0){
+      ride.remaining = 0; ride.phase = "return"; ride.grace = GRACE * 60;
+      note("Time's up. The bike says: \"Your time is up, please return me to the nearest charging station.\"", "crit"); beeps(4, 660); setTimeout(() => speak("Your time is up, please return me to the nearest charging station."), 1500);
+      gl(`Bike ${ride.id}: rental time ended. Waiting for it to be docked.`, "");
+      render(); return;
+    }
+  } else if(ride.phase === "return"){
+    ride.grace -= dt;
+    if(ride.grace <= 0){
+      ride.grace = 0; ride.phase = "alarm"; startSiren();
+      note("Bike not returned. Alarm is sounding.", "crit");
+      gl(`ALARM: bike ${ride.id} was not returned after rental ended. Last known station: ${stName(ride.lastStation)}. Please go and check.`, "crit");
+      render(); return;
+    }
+  }
+  update();
+}
+
+function update(){
+  if(!ride || step !== "ride") return;
+  const r = ride, clock = $("clock"); if(!clock) return;
+  clock.textContent = r.phase === "riding" ? mmss(r.remaining) : "00:00";
+  $("csub").textContent = r.phase === "riding" ? "time left" : r.phase === "return" ? "return within " + mmss(r.grace) : "alarm sounding";
+  const g = $("grace"); if(g) g.textContent = mmss(r.grace);
+  $("bar").style.width = (r.phase === "riding" ? (1 - r.remaining / r.total) * 100 : 100) + "%";
+  $("bar").style.background = r.remaining <= 60 || r.phase !== "riding" ? "var(--alert)" : r.remaining <= 300 ? "var(--gold)" : "var(--leaf)";
+}
+
+function extend(){
+  if(!ride || ride.phase === "alarm") return;
+  ride.paid += PRICE; ride.total += BLOCK * 60; ride.remaining += BLOCK * 60;
+  [600, 300, 60].forEach(t => ride.fired[t] = ride.remaining <= t);
+  ride.phase = "riding"; ride.last = performance.now();
+  note(`Added ${BLOCK} minutes. ${money(PRICE)} paid with ${ride.payLabel}.`);
+  gl(`Bike ${ride.id}: rental extended by ${BLOCK} minutes.`);
+  beeps(1, 1000); render();
+}
+
+function dock(){
+  if(!ride) return;
+  const late = ride.phase === "alarm";
+  stopSiren(); clearInterval(loop); loop = null;
+  ride.phase = "done"; ride.status = late ? "Returned after the alarm sounded." : "Returned on time. Thank you!";
+  gl(`Bike ${ride.id} docked at ${stName(ride.to)}. ${late ? "Alarm cleared." : "Ride complete."}`);
+  lastRide = ride; step = "done"; render();
+}
+
+$("speed").onchange = e => { speed = +e.target.value; };
+$("snd").onchange = e => { soundOn = e.target.checked; };
+$("test").onclick = () => { const was = soundOn; soundOn = true; audio(); beeps(2, 880); soundOn = was; setTimeout(() => speak(leftMsg(5), true), 800); };
+render();
+</script>
+</body>
+</html>
