@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Golden Triangle: Township Simulation</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="wrap">
+  <h1>
+    <svg class="tri" viewBox="0 0 40 40" aria-hidden="true"><polygon points="20,4 37,35 3,35" fill="#e0a526"/><polygon points="20,15 29,31 11,31" fill="#10302b"/></svg>
+    The Golden Triangle
+  </h1>
+  <p>An interactive simulation of a Sime Darby township with three parts working together: Linear Green Spines, Dynamic IoT Road Networks and solar-powered e-bike stations.</p>
+  <div class="scen">
+    <button onclick="scenario('calm')">Calm morning</button>
+    <button onclick="scenario('storm')">Monsoon storm</button>
+    <button onclick="scenario('night')">Night</button>
+    <button onclick="resetSim()">Reset</button>
+  </div>
+</div></header>
+
+<main>
+  <!-- PILLAR 1 -->
+  <section>
+    <h2>Pillar 1: Linear Green Spines</h2>
+    <p class="sub">Permeable pavers and bioswales absorb floodwater instead of relying only on drains.</p>
+    <label>Rainfall (mm/h) <span id="v_rain"></span></label>
+    <input type="range" id="rain" min="0" max="120" value="0">
+    <label>Conventional drain clogged with waste (%) <span id="v_clog"></span></label>
+    <input type="range" id="clog" min="0" max="90" value="30">
+    <div class="tanks">
+      <div class="tank">
+        <h3>Conventional road</h3>
+        <div class="glass"><div class="water" id="w_c"></div><div class="line"></div></div>
+        <div class="status" id="s_c"></div>
+      </div>
+      <div class="tank">
+        <h3>Golden Triangle road</h3>
+        <div class="glass"><div class="water" id="w_g"></div><div class="line"></div><div class="thr" id="thr_line"></div></div>
+        <div class="status" id="s_g"></div>
+      </div>
+    </div>
+    <p class="note">Red dashed line: water reaches the road and homes. Gold dashed line: sensor threshold where the automated gates close. The Golden Triangle road adds absorption through pavers and bioswales, plus gate control. The trees also shade the walkway, which makes short walks more comfortable.</p>
+  </section>
+
+  <!-- SOLAR POWER -->
+  <section>
+    <h2>Solar power</h2>
+    <p class="sub">Solar panels power the water-level sensors and the e-bike charging stations.</p>
+    <label>Sunlight (%) <span id="v_sun"></span></label>
+    <input type="range" id="sun" min="0" max="100" value="100">
+    <div class="stats">
+      <div class="stat"><b id="solarw">0</b><small>Watts from the sensor panel</small></div>
+      <div class="stat"><b id="batt">0</b><small>Sensor battery charge</small></div>
+      <div class="stat"><b id="sens">ON</b><small>Water-level sensors</small></div>
+    </div>
+    <div class="bar"><i id="battbar"></i></div>
+    <p class="small" id="backup"></p>
+    <p class="note">Water-level sensors use very little power (about 0.5 W), so a small panel and a small battery can keep them running through storms and at night. Illustrative assumptions: a 5 W panel and a 5 Wh battery.</p>
+  </section>
+
+  <!-- PILLAR 2 -->
+  <section class="wide">
+    <h2>Pillar 2: Dynamic IoT Road Networks</h2>
+    <p class="sub">Water-level sensors watch the bioswales and warn residents early. Optional DAS fibre-optic cables under the road listen for vibration changes that signal potholes.</p>
+    <div class="iot-grid">
+      <div>
+        <label>Water-level alert threshold (%) <span id="v_thr"></span></label>
+        <input type="range" id="thr" min="40" max="90" value="70">
+        <div class="sign" id="sign">ALL CLEAR</div>
+        <div class="gates">
+          <div class="gate" id="g1">Gate A: open</div>
+          <div class="gate" id="g2">Gate B: open</div>
+          <div class="gate" id="g3">Gate C: open</div>
+        </div>
+        <div class="sign" id="das" style="background:#0c2a24;color:#8fe3b5">DAS road monitoring: normal</div>
+        <button style="color:var(--ink)" onclick="pothole()">Simulate road erosion (DAS fibre-optic cable)</button>
+        <p class="note">Distributed Acoustic Sensing (DAS) cables are optional but efficient. They detect vibration changes under the road. Combined with bioswale soil moisture and pressure data, they predict potholes so crews can repair them off-peak.</p>
+        <details class="cool"><summary>How the sensors stay cool</summary>
+          <p><b>Split-brain design.</b> The sensing probe stays in the open and sends its readings down a cable to the microprocessor, which is buried underground where it stays cooler.</p>
+          <p><b>Venturi chimney effect.</b> A hollow mini chimney with angled slats surrounds the sensor. When a breeze passes, the pressure drops inside and pulls hot air out. It only works while there is some wind.</p>
+        </details>
+      </div>
+      <div class="phone">
+        <h3>Township app</h3>
+        <div class="tiles">
+          <div class="tile">Water<b id="t_water">0%</b></div>
+          <div class="tile">Road<b id="t_road">OK</b></div>
+          <div class="tile">Weather<b id="t_wx">Clear</b></div>
+        </div>
+        <div class="feed" id="feed"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PILLAR 3 -->
+  <section class="wide">
+    <h2>Pillar 3: E-bike charging stations</h2>
+    <p class="sub">Short trips by e-bike instead of by car. Residents unlock a bike free with their personal QR code in the app. Visitors pay RM 3 per 30 minutes first. Try taking and returning bikes.</p>
+    <div id="stations" class="stations"></div>
+    <p class="note">Each station runs on its own solar panels and battery, so charging slows in a storm and the station runs on its battery at night. Open <a href="app.html">app.html</a> to see a resident's QR code and <a href="ebike-rental.html">ebike-rental.html</a> for the visitor payment page. Station charge values are illustrative.</p>
+  </section>
+</main>
+<footer>Prototype simulation for the Sime Darby township challenge. Numbers are simplified for demonstration, not engineering specifications.</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
